@@ -1,0 +1,23 @@
+{
+	"required": true,
+	"package": "lare.mobgear.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"MobGearMixin",
+		"EquipmentHolderMixin",
+		"DrownedGearMixin",
+		"FoxGearMixin",
+		"AbstractSkeletonGearMixin",
+		"PiglinBruteGearMixin",
+		"PiglinGearMixin",
+		"PillagerGearMixin",
+		"VexGearMixin",
+		"VindicatorGearMixin",
+		"WitherSkeletonGearMixin",
+		"ZombiefiedPiglinGearMixin",
+		"ZombieGearMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
