@@ -5,17 +5,8 @@
 	"mixins": [
 		"MobGearMixin",
 		"EquipmentHolderMixin",
-		"DrownedGearMixin",
-		"FoxGearMixin",
-		"AbstractSkeletonGearMixin",
-		"PiglinBruteGearMixin",
-		"PiglinGearMixin",
-		"PillagerGearMixin",
-		"VexGearMixin",
-		"VindicatorGearMixin",
-		"WitherSkeletonGearMixin",
-		"ZombiefiedPiglinGearMixin",
-		"ZombieGearMixin"
+		"LootTableMixin",
+		"LootPoolMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

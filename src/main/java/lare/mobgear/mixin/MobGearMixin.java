@@ -1,92 +1,70 @@
 package lare.mobgear.mixin;
 
-import lare.mobgear.MobGear;
+import lare.mobgear.interfaces.EquipmentHolderAdditions;
 import net.minecraft.entity.*;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.loot.context.LootWorldContext;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Map;
-import java.util.Optional;
-
 import static lare.mobgear.MobGear.getGearTable;
 
 @Mixin(MobEntity.class)
-public abstract class MobGearMixin extends LivingEntity implements EquipmentHolder {
+public abstract class MobGearMixin extends LivingEntity implements EquipmentHolder, EquipmentHolderAdditions {
 
-    private boolean didInitEquipment = false;
+    @Unique
+    private LocalDifficulty spawnDifficulty = null;
+    @Unique
+    private SpawnReason spawnReason = null;
 
-    @Shadow protected abstract void initEquipment(Random random, LocalDifficulty localDifficulty);
-    @Shadow protected abstract LootWorldContext createEquipmentLootParameters(ServerWorld world);
-
-    @Shadow public abstract Optional<RegistryKey<LootTable>> getLootTableKey();
 
     protected MobGearMixin(EntityType<? extends MobEntity> entityType, World world) {
         super(entityType, world);
     };
 
-    @Inject(at = @At("HEAD"), method = "updateEnchantments", cancellable = true)
-    private void updateEnchantments(ServerWorldAccess world, Random random, LocalDifficulty localDifficulty, CallbackInfo ci) {
-        // Enchanting will happen from the loot tables in initEquipment
-        if (getGearTable(this) != LootTable.EMPTY) {
-            ci.cancel();
-        }
-    }
-
-    @Inject(at = @At("HEAD"), method = "initEquipment", cancellable = true)
-    private void initEquipment(Random random, LocalDifficulty localDifficulty, CallbackInfo ci) {
-        // Prevents double calls
-        if (didInitEquipment) {
-            ci.cancel();
-            return;
-        }
-
-        didInitEquipment = true;
-
-        Identifier mobType = Registries.ENTITY_TYPE.getId(this.getType());
-        RegistryKey<LootTable> gearTable = RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of(mobType.getNamespace(),"gear/"+mobType.getPath()));
-
-        World world = this.getEntityWorld();
-        MinecraftServer server = world.getServer();
-        if (server != null) {
-            LootTable lootTable = server.getReloadableRegistries().getLootTable(gearTable);
-            if (lootTable != LootTable.EMPTY) {
-
-                LootWorldContext loot = (new LootWorldContext.Builder((ServerWorld) world)).add(LootContextParameters.THIS_ENTITY, this).add(LootContextParameters.ORIGIN, this.getPos()).luck(localDifficulty.getLocalDifficulty()).build(LootContextTypes.EQUIPMENT);
-                this.setEquipmentFromTable(gearTable, loot, Map.of());
-
-                ci.cancel();
-            }
-        }
-    }
-
-    @Inject(at = @At("TAIL"), method = "initialize")
+    @Inject(at = @At("RETURN"), method = "initialize")
     private void initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, EntityData entityData, CallbackInfoReturnable<EntityData> cir) {
-        var asd = ((MobEntity)(Object)this);
-        if (!(asd instanceof ZombieEntity) && getGearTable(this) != LootTable.EMPTY && spawnReason != SpawnReason.CONVERSION && !SpawnReason.isAnySpawner(spawnReason)) {
-            Random random = world.getRandom();
-            this.initEquipment(random, difficulty);
+        // We're unable to override the gear during initialization since not all mob data has been set at this point yet.
+        // So we're only saving the necessary data temporarily and doing the gear override after the first tick.
+        this.spawnDifficulty = difficulty;
+        this.spawnReason = spawnReason;
+    }
+
+    @Inject(at = @At("TAIL"), method = "tick")
+    private void tick(CallbackInfo ci) {
+        if (this.spawnReason != null) {
+            // Attempt gear override only one time.
+            this.gearOverride(this.spawnDifficulty, this.spawnReason);
+            this.spawnDifficulty = null;
+            this.spawnReason = null;
+        } else if (this.spawnDifficulty != null) {
+            this.spawnDifficulty = null;
         }
     }
 
+    @Unique
+    private void gearOverride(LocalDifficulty difficulty, SpawnReason spawnReason) {
+        LootTable lootTable = getGearTable(this);
+        // Don't override gear if spawned from Spawner or Trial Spawner since spawners are able to set their own equipment.
+        // Maybe make a gamerule for this?
+        if (lootTable != LootTable.EMPTY && spawnReason != SpawnReason.CONVERSION && !SpawnReason.isAnySpawner(spawnReason)) {
+            LootWorldContext loot = (new LootWorldContext.Builder((ServerWorld) this.getEntityWorld())).add(LootContextParameters.THIS_ENTITY, this).add(LootContextParameters.ORIGIN, this.getPos()).luck(difficulty.getLocalDifficulty()).build(LootContextTypes.EQUIPMENT);
+            this.mobGear$setEquipmentFromTableWithLootPoolCheck(lootTable, loot);
+        }
+    }
 
+    public void mobGear$clearEquipment() {
+        this.equipment.clear();
+    }
 }
