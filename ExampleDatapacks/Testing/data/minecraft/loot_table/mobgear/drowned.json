@@ -1,0 +1,89 @@
+{
+  "type": "minecraft:equipment",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "mobgear:combinedgroup",
+          "children": [
+            {
+              "type": "minecraft:sequence",
+              "children": [
+                {
+                  "type": "minecraft:item",
+                  "name": "minecraft:wooden_axe",
+                  "functions": [
+                    {
+                      "function": "minecraft:set_custom_data",
+                      "tag": {
+                        "mobgear:priority": 3
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "minecraft:item",
+                  "name": "minecraft:iron_axe",
+                  "functions": [
+                    {
+                      "function": "minecraft:set_custom_data",
+                      "tag": {
+                        "mobgear:priority": 5
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "minecraft:item",
+                  "name": "minecraft:trident",
+                  "functions": [
+                    {
+                      "function": "minecraft:set_custom_data",
+                      "tag": {
+                        "mobgear:priority": 7
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "minecraft:item",
+                  "name": "minecraft:netherite_axe",
+                  "functions": [
+                    {
+                      "function": "minecraft:set_custom_data",
+                      "tag": {
+                        "mobgear:priority": 10,
+                        "mobgear:dropchance": 0
+                      }
+                    },
+                    {
+                      "function": "minecraft:set_attributes",
+                      "modifiers": [
+                        {
+                          "attribute": "minecraft:water_movement_efficiency",
+                          "id": "mobgear.drowned.efficiency",
+                          "amount": 1,
+                          "operation": "add_value",
+                          "slot": "mainhand"
+                        },
+                        {
+                          "attribute": "minecraft:movement_speed",
+                          "id": "mobgear.drowned.efficiency",
+                          "amount": 0.3,
+                          "operation": "add_value",
+                          "slot": "mainhand"
+                        }
+                      ],
+                      "replace": true
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

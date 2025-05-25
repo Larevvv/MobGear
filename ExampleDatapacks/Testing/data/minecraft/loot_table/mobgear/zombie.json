@@ -5,7 +5,55 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:netherite_axe"
+          "name": "minecraft:shield"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "predicates": {
+              "minecraft:custom_data": {
+                "mobgear:spawnreason": "REINFORCEMENT"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "mobgear:combinedgroup",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:netherite_axe",
+              "functions": [
+                {
+                  "function": "minecraft:set_custom_data",
+                  "tag": {
+                    "mobgear:dropchance": 0
+                  }
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:netherite_axe",
+              "functions": [
+                {
+                  "function": "minecraft:set_custom_data",
+                  "tag": {
+                    "mobgear:slot": "OFFHAND",
+                    "mobgear:dropchance": 0
+                  }
+                }
+              ]
+            }
+          ]
         }
       ],
       "conditions": [

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:equipment",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:iron_boots",
+          "functions": [
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "mobgear:deathloottable": "minecraft:equipment/trial_chamber"
+              }
+            }
+          ]
+        }
+      ],
+      "conditions": []
+    }
+  ]
+}

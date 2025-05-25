@@ -10,11 +10,15 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,6 +31,8 @@ import static lare.mobgear.MobGear.*;
 
 @Mixin(MobEntity.class)
 public abstract class MobGearMixin extends LivingEntity implements EquipmentHolder, EquipmentHolderAdditions {
+
+    @Shadow private Optional<RegistryKey<LootTable>> lootTable;
 
     protected MobGearMixin(EntityType<? extends MobEntity> entityType, World world) {
         super(entityType, world);
@@ -91,5 +97,9 @@ public abstract class MobGearMixin extends LivingEntity implements EquipmentHold
 
     public void mobGear$clearEquipment() {
         this.equipment.clear();
+    }
+
+    public void mobGear$setDeathLootTable(String DeathLootTableKey) {
+        this.lootTable = Optional.of(RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of(DeathLootTableKey)));
     }
 }

@@ -36,6 +36,9 @@ public interface EquipmentHolderMixin extends EquipmentHolderAdditions {
     void mobGear$clearEquipment();
 
     @Unique
+    void mobGear$setDeathLootTable(String DeathLootTableKey);
+
+    @Unique
     default void mobGear$setEquipmentFromTableWithLootPoolCheck(LootTable lootTable, LootWorldContext parameters) {
         if (lootTable != LootTable.EMPTY) {
 
@@ -81,13 +84,21 @@ public interface EquipmentHolderMixin extends EquipmentHolderAdditions {
 
                         copy.remove(PriorityItemData.toString());
 
+                        NbtElement deathLootData = copy.get(DeathLootTableItemData.toString());
+                        if (deathLootData != null) {
+                            deathLootData.asString().ifPresent(this::mobGear$setDeathLootTable);
+
+                            // Remove death loot NBT from custom data
+                            copy.remove(DeathLootTableItemData.toString());
+                        }
+
                         NbtElement chanceData = copy.get(DropchanceItemData.toString());
                         if (chanceData != null) {
                             var chance = chanceData.asFloat();
                             if (chance.isPresent()) {
                                 dropchance = chance.get();
                             }
-                            // Remove gear dropchance NBT from custom data.
+                            // Remove gear drop chance NBT from custom data.
                             copy.remove(DropchanceItemData.toString());
                         }
 

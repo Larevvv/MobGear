@@ -7,5 +7,7 @@ public interface EquipmentHolderAdditions {
 
     void mobGear$clearEquipment();
 
+    void mobGear$setDeathLootTable(String DeathLootTableKey);
+
     void mobGear$setEquipmentFromTableWithLootPoolCheck(LootTable lootTable, LootWorldContext parameters);
 }

@@ -27,6 +27,7 @@ public class MobGear implements ModInitializer {
 	public static final Identifier DropchanceItemData = Identifier.of(MOD_ID, "dropchance");
 	public static final Identifier SlotItemData = Identifier.of(MOD_ID, "slot");
 	public static final Identifier PriorityItemData = Identifier.of(MOD_ID, "priority");
+	public static final Identifier DeathLootTableItemData = Identifier.of(MOD_ID, "deathloottable");
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
