@@ -3,27 +3,30 @@ package lare.mobgear;
 import net.fabricmc.api.ModInitializer;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.loot.entry.LootPoolEntryType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 
 public class MobGear implements ModInitializer {
 	public static final String MOD_ID = "mobgear";
+
+	public static final Identifier CombinedGroupLootPool = Identifier.of(MOD_ID, "combinedgroup");
+
+	public static final Identifier SpawnReasonEntityData = Identifier.of(MOD_ID, "spawnreason");
+	public static final Identifier DifficultyEntityData = Identifier.of(MOD_ID, "difficulty");
+
+	public static final Identifier DropchanceItemData = Identifier.of(MOD_ID, "dropchance");
+	public static final Identifier SlotItemData = Identifier.of(MOD_ID, "slot");
+	public static final Identifier PriorityItemData = Identifier.of(MOD_ID, "priority");
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -48,6 +51,6 @@ public class MobGear implements ModInitializer {
 	}
 
 	static {
-		COMBINEDGROUP = Registry.register(Registries.LOOT_POOL_ENTRY_TYPE, Identifier.of(MOD_ID, "combinedgroup") , new LootPoolEntryType(CombinedGroupEntry.CODEC));
+		COMBINEDGROUP = Registry.register(Registries.LOOT_POOL_ENTRY_TYPE, CombinedGroupLootPool, new LootPoolEntryType(CombinedGroupEntry.CODEC));
 	}
 }

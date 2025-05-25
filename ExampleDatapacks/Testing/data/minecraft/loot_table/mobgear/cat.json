@@ -1,0 +1,45 @@
+{
+  "type": "minecraft:equipment",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:leather_boots",
+          "functions": [
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "mobgear:dropchance": 0
+              }
+            },
+            {
+              "function": "minecraft:set_attributes",
+              "modifiers": [
+                {
+                  "attribute": "minecraft:scale",
+                  "id": "mobgear:scale",
+                  "amount": 1,
+                  "operation": "add_value",
+                  "slot": "feet"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "components": {
+              "minecraft:cat/variant": "minecraft:all_black"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

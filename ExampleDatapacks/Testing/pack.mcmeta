@@ -1,0 +1,7 @@
+{
+  "pack": {
+    "description": "Testing",
+    "pack_format": 1,
+    "supported_formats": [1, 999]
+  }
+}

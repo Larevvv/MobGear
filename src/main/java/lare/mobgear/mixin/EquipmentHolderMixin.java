@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static lare.mobgear.MobGear.*;
 import static net.minecraft.loot.LootTable.processStacks;
 
 @Mixin(EquipmentHolder.class)
@@ -48,12 +49,19 @@ public interface EquipmentHolderMixin extends EquipmentHolderAdditions {
                 this.mobGear$clearEquipment();
 
                 // Process custom data first since there may be mobgear values
-                // Could add mobgear:priority value in the future
+                // If mobgear:priority value is present, use is to determine sort order.
                 list.sort((a, b) -> {
                     NbtComponent customDataA = a.getComponents().get(DataComponentTypes.CUSTOM_DATA);
                     NbtComponent customDataB = b.getComponents().get(DataComponentTypes.CUSTOM_DATA);
 
-                    if (customDataA != null && customDataB != null) return 0;
+                    if (customDataA != null && customDataB != null) {
+                        var priorityA = customDataA.copyNbt().getInt(PriorityItemData.toString());
+                        var priorityB = customDataB.copyNbt().getInt(PriorityItemData.toString());
+
+                        if (priorityA.isPresent() && priorityB.isPresent()) return priorityB.get() - priorityA.get();
+                        else if (priorityA.isPresent()) return priorityA.get();
+                        else if (priorityB.isPresent()) return priorityB.get();
+                    }
                     else if (customDataA != null) return -1;
                     else if (customDataB != null) return 1;
                     return 0;
@@ -70,17 +78,20 @@ public interface EquipmentHolderMixin extends EquipmentHolderAdditions {
                     if (customData != null) {
 
                         NbtCompound copy = customData.copyNbt();
-                        NbtElement chanceData = copy.get("mobgear:dropchance");
+
+                        copy.remove(PriorityItemData.toString());
+
+                        NbtElement chanceData = copy.get(DropchanceItemData.toString());
                         if (chanceData != null) {
                             var chance = chanceData.asFloat();
                             if (chance.isPresent()) {
                                 dropchance = chance.get();
                             }
                             // Remove gear dropchance NBT from custom data.
-                            copy.remove("mobgear:dropchance");
+                            copy.remove(DropchanceItemData.toString());
                         }
 
-                        NbtElement slotData = copy.get("mobgear:slot");
+                        NbtElement slotData = copy.get(SlotItemData.toString());
                         if (slotData != null) {
                             var slot = slotData.asString();
                             if (slot.isPresent()) {
@@ -97,7 +108,7 @@ public interface EquipmentHolderMixin extends EquipmentHolderAdditions {
                                 };
                             }
                             // Remove gear slot NBT from custom data.
-                            copy.remove("mobgear:slot");
+                            copy.remove(SlotItemData.toString());
                         }
 
                         // Update custom data (or remove if empty)
