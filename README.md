@@ -1,10 +1,28 @@
 # MobGear
-> A fabric mod which adds the ability for datapacks to control what equipment mobs spawn with using loot tables.
+> A server-side fabric mod which adds the ability for datapacks to control what equipment mobs spawn with using loot tables.
+
+> This mod can be installed on the server without needing players to install it!
 
 Loot tables matching the entity's resource location under `loot_table/mobgear/` folder will determine the type of equipment that entity spawns with. As an example `data/minecraft/loot_table/mobgear/zombie.json` will control what equipment the zombie will spawn with. For modded mobs the equivalent would be `data/modname/loot_table/mobgear/modded_mob.json` (this is not tested but it might work!).
 
+## How is luck handled?
+
+When generating the equipment loot table, luck is set as the local difficulty. This means the range is following:
+ - Peaceful: 0
+ - Easy: 0.75 - 1.5
+ - Normal: 1.5 - 4.0
+ - Hard: 2.25 - 6.75
+
+ These ranges can be used to make certain equipment only appear when the difficulty is high enough to really spice up the difficulty.
+
+ [Read more about local difficulty](https://minecraft.wiki/w/Difficulty#Regional_difficulty)
+
 ## New Combined Group loot entry type
 Currently vanilla loot tables have no proper way of selecting multiple specific items at once. Introducing `mobgear:combinedgroup`! CombinedGroup behaves similarly to regular Group but all of the items generated within the children are provided as potential equipment.
+
+Unlike the vanilla loot groups, the combined group also includes weight and quality fields which behave like regular: `real weight = max(floor(weight + (quality × luck)),0)`. If the resulting weight is 0 or less, the group is discarded.
+
+Items inside the combined group can also use weight and quality to filter out items out of the group. Similar to combined group itself if the real weight is 0 or less then the item is discarded.
 
 <details>
     <summary>Example Loot table using CombinedGroup to equip full iron armor</summary>
@@ -18,6 +36,8 @@ Currently vanilla loot tables have no proper way of selecting multiple specific 
             "entries": [
                 {
                     "type": "mobgear:combinedgroup",
+                    "weight": 1,
+                    "quality": 0,
                     "children": [
                         {
                             "type": "minecraft:item",
