@@ -43,7 +43,7 @@ public class MobGear implements ModInitializer {
 		Identifier mobType = Registries.ENTITY_TYPE.getId(entity.getType());
 		RegistryKey<LootTable> gearTable = RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of(mobType.getNamespace(),"mobgear/"+mobType.getPath()));
 
-		World world = entity.getEntityWorld();
+		World world = entity.getWorld();
 		MinecraftServer server = world.getServer();
 		if (server != null) {
 			return server.getReloadableRegistries().getLootTable(gearTable);
