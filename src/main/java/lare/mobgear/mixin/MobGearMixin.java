@@ -36,7 +36,7 @@ public abstract class MobGearMixin extends LivingEntity implements EquipmentHold
 
     protected MobGearMixin(EntityType<? extends MobEntity> entityType, World world) {
         super(entityType, world);
-    };
+    }
 
     @Inject(at = @At("RETURN"), method = "initialize")
     private void initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, EntityData entityData, CallbackInfoReturnable<EntityData> cir) {
