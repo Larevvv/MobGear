@@ -42,7 +42,7 @@ public interface EquipmentHolderMixin extends EquipmentHolderAdditions {
     default void mobGear$setEquipmentFromTableWithLootPoolCheck(LootTable lootTable, LootWorldContext parameters) {
         if (lootTable != LootTable.EMPTY) {
 
-            LootContext context = ((LootTableAdditions)(Object)lootTable).mobGear$buildLootContext(parameters);
+            LootContext context = ((LootTableAdditions)lootTable).mobGear$buildLootContext(parameters);
             List<ItemStack> list = new ObjectArrayList<>();
             Objects.requireNonNull(list);
             boolean hasPools = ((LootTableAdditions) lootTable).mobGear$generateUnprocessedLootWithTest(context, processStacks(context.getWorld(), list::add));

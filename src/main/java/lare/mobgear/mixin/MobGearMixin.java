@@ -36,23 +36,25 @@ public abstract class MobGearMixin extends LivingEntity implements EquipmentHold
 
     protected MobGearMixin(EntityType<? extends MobEntity> entityType, World world) {
         super(entityType, world);
-    };
+    }
 
     @Inject(at = @At("RETURN"), method = "initialize")
     private void initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, EntityData entityData, CallbackInfoReturnable<EntityData> cir) {
         // We're unable to override the gear during initialization since not all mob data has been set at this point yet.
         // So we're only saving the necessary data to CUSTOM_DATA temporarily and doing the gear override after the first tick.
+        LootTable lootTable = getGearTable(this);
 
-        NbtComponent data = this.get(DataComponentTypes.CUSTOM_DATA);
-        if (data != null) {
-            var nbt = data.copyNbt();
+        if (lootTable != LootTable.EMPTY) {
+            NbtComponent data = this.get(DataComponentTypes.CUSTOM_DATA);
+            if (data != null) {
+                var nbt = data.copyNbt();
 
-            nbt.putString(SpawnReasonEntityData.toString(), spawnReason.name());
-            nbt.putDouble(DifficultyEntityData.toString(), difficulty.getLocalDifficulty());
+                nbt.putString(SpawnReasonEntityData.toString(), spawnReason.name());
+                nbt.putDouble(DifficultyEntityData.toString(), difficulty.getLocalDifficulty());
 
-            this.setComponent(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+                this.setComponent(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+            }
         }
-
     }
 
     @Inject(at = @At("TAIL"), method = "tick")
@@ -90,7 +92,7 @@ public abstract class MobGearMixin extends LivingEntity implements EquipmentHold
         // Don't override gear if spawned from Spawner or Trial Spawner since spawners are able to set their own equipment.
         // Maybe make a gamerule for this?
         if (lootTable != LootTable.EMPTY && spawnReason != SpawnReason.CONVERSION && !SpawnReason.isAnySpawner(spawnReason)) {
-            LootWorldContext loot = (new LootWorldContext.Builder((ServerWorld) this.getEntityWorld())).add(LootContextParameters.THIS_ENTITY, this).add(LootContextParameters.ORIGIN, this.getPos()).luck(difficulty.floatValue()).build(LootContextTypes.EQUIPMENT);
+            LootWorldContext loot = (new LootWorldContext.Builder((ServerWorld) this.getWorld())).add(LootContextParameters.THIS_ENTITY, this).add(LootContextParameters.ORIGIN, this.getPos()).luck(difficulty.floatValue()).build(LootContextTypes.EQUIPMENT);
             this.mobGear$setEquipmentFromTableWithLootPoolCheck(lootTable, loot);
         }
     }
